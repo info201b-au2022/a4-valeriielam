@@ -1,45 +1,122 @@
 ---
-title: "Your A4 Report Title (TODO: Revise title)"
-author: "Your Name"
-date: '2022-11-01'
+title: "Jail Population in U.S. Data Visualization"
+author: "Valerie LAM"
+date: '2022-11-14'
 output: html_document
 ---
 
-```{r echo=FALSE, eval=TRUE, message=FALSE}
-source("../source/a4-helpers.R")
-source("../source/analysis.R")
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning = FALSE}
+
+source("~/Documents/info201/assignments/a4-valeriielam/source/a4-helpers.R")
+source("~/Documents/info201/assignments/a4-valeriielam/source/a4.R")
 ```
 
-## Abstract 
-[TODO: Include a short abstract (about 50 words)]
+## Abstract
 
-# Test (TODO: Remove before submission!!)
-```{r echo=FALSE}
-q1_string <- test_query1()
-num <- 5
-```
-As you know, this is a markdown report. The [R Markdown Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) is **useful!**
+The use of this report is to expose patterns of inequality by visualizing the increase of jail population from 1970-2018 using incarceration data collected by the Vera Institute.
 
-* Here's a test of a dynamic variable. Say **"`r q1_string`!!!** 
-* Here's another test. A vector
-of numbers: `r test_query2(num)`.
+## Introduction
 
-Recall that _{r echo=TRUE}_ can be used to display the code, 
-which is very useful when developing and debugging a report. Here's an example: 
+This assignment is about about visualizing data about the increase of jail population in U.S. Students get to work with real data in different categories columns and types.
 
-```{r echo=TRUE}
-num <- 5
-sum <- sum(test_query2(num))
-print(sum)
+## Section 2: Data Summary
+
+From the data, we can see the population from male to female, ages to races, distributed in different states and counties. By better understanding the patterns of inequality in the prison system, I calculates the growth of U.S prison population, prison population by state, by race, especially the black, and by overall. For example, to compare the highest or lowest jail population in 3 states, we can see California has the highest jail population rate; and the change over the last N years has been steadily changing can be clearly seen in the graph.
+
+```{r, echo=FALSE}
+source("~/Documents/info201/assignments/a4-valeriielam/source/a4-helpers.R")
+
 ```
 
-## Introduction 
-[TODO]
+## Section 3: Growth of the U.S. Prison Population
 
-## Data Summary 
-[TODO]
+Section 3 calculates the growth of the U.S. prison population, producing a bar chart that shows the growth of the U.S. prison population from 1970 to 2018. The x axis indicates the year and the y axis indicates the total jail population among these years.
 
-[TODO ... other sections ... See Canvas for details]
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
-_All the very best with your work!_
+get_year_jail_pop <- get_data() %>% 
+    group_by(year, total_jail_pop) %>% 
+    summarise(get_year_jail_pop = sum(year * total_jail_pop ) / sum(total_jail_pop))
 
+plot_jail_pop_for_us <- function(){
+  return(ggplot(data = get_year_jail_pop) +
+           geom_col(mapping = aes(x = year, y = total_jail_pop)))
+}
+
+plot_jail_pop_for_us()
+
+```
+
+## Section 4: Growth of Prison Population by State
+
+Section 4 shows hows the growth of the U.S. prison population from 1970 to 2018 by one or more states, and I have selected the following 3 states; Washington, California and New York. From the graph you can see California has the highest prison population growth among another 2 states, while Washington has the lowest prison population growth rate.
+
+```{r, echo=FALSE, message=FALSE}
+
+states <- c("WA", "CA","NY")
+
+get_jail_pop_by_states<- function(states){
+  return(get_data() %>%
+    filter(state %in% states) %>%
+    group_by(state, year) %>%
+    summarize(total_jail_pop_state = sum(total_jail_pop, na.rm = TRUE)))
+    
+}
+
+plot_jail_pop_by_states <- function(states){
+  
+  return(ggplot(data = get_jail_pop_by_states(states),
+         aes(x = year, y = total_jail_pop_state, group = state, color = state)) + 
+    geom_line())
+}
+
+
+plot_jail_pop_by_states(states)
+```
+
+## Section 5: variable comparison that reveals potential patterns of inequality
+
+For section 5, I calculated the population rate between the black and white to reveal the potential patterns of inequality. While the graph clearly shows the relationship to one another, the graph also shows the inequality between both races.
+
+```{r, echo=FALSE, message=FALSE}
+
+states <- c("WA","CA","NY")
+
+black_jail_plot_by_states <- get_data() %>% 
+           filter(state %in% states) %>%
+           group_by(black_jail_pop, year) %>%
+           summarize(black_jail_plot_by_states = sum(black_jail_pop, na.rm = TRUE))
+
+white_jail_plot_by_states <- get_data() %>% 
+          filter(state %in% states) %>%
+          group_by(white_jail_pop, year) %>%
+          summarize(white_jail_plot_by_states = sum(white_jail_pop, na.rm = TRUE))
+
+
+black_and_white_jail_plot <- function(){
+  return(ggplot(data = get_data())) +
+  geom_point(mapping = aes(x = year, y = black_jail_plot_by_states))
+}
+
+black_and_white_jail_plot()
+
+
+```
+
+## Section 6: A map shows potential patterns of inequality that vary geographically
+
+This map shows the potentials patterns of inequality that vary geograohically
+
+```{r, echo=FALSE, message=FALSE}
+total_jail_pop <- get_data() %>% 
+  group_by(year, state) %>% 
+  summarise(total_jail_pop = sum(year * total_jail_pop ) / sum(total_jail_pop))
+
+plot_jail_pop <- function(states){
+  return(ggplot(data = total_jail_pop)) +
+    geom_col(mapping = aes(x = year, y = total_jail_pop))
+}
+
+plot_jail_pop()
+
+```

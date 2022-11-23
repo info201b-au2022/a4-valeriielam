@@ -1,15 +1,17 @@
 library(tidyverse)
 
+
 # Data access ----
 #---------------------------------------------------------------------------#
 # This function returns the incarceration data as a dataframe
 # Note: The CSV file is stored on my local machine to speed load times
 #---------------------------------------------------------------------------#
 get_data <- function(num_records=-1) {
-  fname <- "~/Documents/info201/data/incarceration_trends.csv"
+  fname <- "~/Documents/info201/assignments/a4-valeriielam/incarceration_trends.csv"
   df <- read.csv(fname, nrows=num_records)
   return(df)
 }
+
 
 # Processing places ----
 # NOTE: For these functions to work, the dataframe `incarceration_df` must 
@@ -150,7 +152,6 @@ get_basic_info <- function(df) {
 # Comment or uncomment 
 #----------------------------------------------------------------------------#
 # ## Very important: You must initialize `incarceration_df`
-# incarceration_df <- get_data()
 # 
 # ## Demonstrate use of the functions
 # ## Each of these functions returns a vector of states
@@ -168,3 +169,4 @@ get_basic_info <- function(df) {
 # 
 # ## 
 # states_with_no_jail_pop()
+
